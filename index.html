@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KaagaPay</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+
+<body>
+  <div class="app-container">
+    <header class="app-header">
+      <div class="user-greeting">
+        <p>What's up,</p>
+        <h1 id="user-name">Riel Montopa!</h1>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div id="connection-status" class="status-badge offline">
+          <i class="ph ph-circle"></i> Offline
+        </div>
+        <div><img src="KP.png" class="logo"></div>
+      </div>
+    </header>
+    <main class="app-content">
+      <section id="view-home" class="view active">
+
+        <!-- Eco Tracker Widget -->
+        <div class="eco-tracker-card" id="ecoTrackerWidget">
+          <i class="ph-fill ph-leaf leaf-bg"></i>
+          <div class="eco-header">
+            <div class="eco-title">
+              <i class="ph ph-leaf"></i> Eco-Savings Tracker
+            </div>
+            <div id="analytics-badge" class="analytics-badge" style="display: none;">
+              <i class="ph-fill ph-cpu"></i> Node.js AI
+            </div>
+          </div>
+          <div class="eco-amount" id="ecoAmountLoading">...</div>
+          <div class="eco-amount" id="ecoAmountValue" style="display:none;"></div>
+          <div class="eco-subtitle" id="ecoSubtitle">Loading your savings forecast... 🌱</div>
+
+          <div class="eco-forecast" id="ecoForecast"
+            style="display:none; margin-top: 12px; font-size: 0.85rem; background: rgba(0,0,0,0.15); padding: 12px; border-radius: 8px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+              <span>Next Month Estimate:</span>
+              <strong id="nextMonthForecast"></strong>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span>Year-End Projected:</span>
+              <strong id="yearEndForecast"></strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Water Leak Tracker Widget -->
+        <!-- This was created using Generative AI -->
+        <div class="water-tracker-card" id="waterTrackerWidget">
+          <i class="ph-fill ph-drop drop-bg"></i>
+          <div class="eco-header">
+            <div class="eco-title">
+              <i class="ph ph-drop"></i> Water Leak Tracker
+            </div>
+          </div>
+          <div style="margin-top: 16px;">
+            <label style="font-size: 0.85rem; opacity: 0.9;">Est. amount lost per day (liters):</label>
+            <input type="number" id="litersLostInput" value="0" min="0" placeholder="e.g. 50"
+              style="width: 100%; padding: 10px; border-radius: 8px; border: none; margin-top: 8px; font-size: 1rem; color: #1e3a8a; font-weight: 600; outline: none;">
+          </div>
+          <div style="margin-top: 16px; background: rgba(0,0,0,0.15); padding: 12px; border-radius: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 0.85rem; opacity: 0.9;">Daily Money Lost:</span>
+              <strong id="dailyLossValue" style="font-size: 1.25rem; color: #fca5a5;">₱0.00</strong>
+            </div>
+            <div style="font-size: 0.75rem; opacity: 0.7; margin-top: 4px;">Based on 2026 Manila Water base rate
+              (₱61.08/m³)</div>
+          </div>
+        </div>
+
+        <!-- Services Grid -->
+        <div class="section-title">Our Services</div>
+        <div class="services-grid">
+          <div class="service-item" data-service="Appliances">
+            <div class="service-icon"><i class="ph ph-plug"></i></div>
+            <span>Appliances</span>
+          </div>
+          <div class="service-item" data-service="Plumbing">
+            <div class="service-icon blue"><i class="ph ph-drop"></i></div>
+            <span>Plumbing</span>
+          </div>
+          <div class="service-item" data-service="Gardening">
+            <div class="service-icon"><i class="ph ph-plant"></i></div>
+            <span>Gardening</span>
+          </div>
+          <div class="service-item" data-service="Furniture">
+            <div class="service-icon orange"><i class="ph ph-armchair"></i></div>
+            <span>Furniture</span>
+          </div>
+          <div class="service-item" data-service="Gadgets">
+            <div class="service-icon blue"><i class="ph ph-device-mobile"></i></div>
+            <span>Gadgets</span>
+          </div>
+          <div class="service-item" data-service="Others">
+            <div class="service-icon orange"><i class="ph ph-dots-three-circle"></i></div>
+            <span>Others</span>
+          </div>
+        </div>
+
+        <!-- Promos Carousel -->
+        <div class="section-title">
+          <span>Vouchers & Promos</span>
+          <a href="#" class="section-link">See all</a>
+        </div>
+        <div class="vouchers-carousel">
+          <div class="voucher-card">
+            <div class="voucher-icon"><i class="ph ph-shield-check"></i></div>
+            <div class="voucher-details">
+              <h4>Service Warranty</h4>
+              <p>1 free repair if problem persists</p>
+            </div>
+          </div>
+          <div class="voucher-card">
+            <div class="voucher-icon" style="background:#d1fae5; color:#10b981;"><i class="ph ph-ticket"></i></div>
+            <div class="voucher-details">
+              <h4>20% Off Plumbing</h4>
+              <p>Valid until Oct 31</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. FIND VIEW (Map & Contest) -->
+      <section id="view-find" class="view" style="padding: 0; min-height: 100%;">
+        <div class="map-container">
+          <div id="find-map" style="width: 100%; height: 100%; position: absolute; z-index: 1;"></div>
+          <div class="map-ui-layer">
+            <div class="search-bar">
+              <i class="ph ph-magnifying-glass" style="color:var(--text-muted); font-size: 20px;"></i>
+              <input type="text" placeholder="Search for nearby services...">
+            </div>
+
+            <div class="contest-banner">
+              <h3><i class="ph-fill ph-trophy"></i> The Greenest City Contest</h3>
+              <p>Makati is currently leading with 1,204 repairs this month! Book a service to help your city win.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. ACTIVITY VIEW (Ongoing & Past Jobs) -->
+      <section id="view-activity" class="view">
+        <div class="section-title">Active Job</div>
+
+        <div class="job-card">
+          <div class="job-header">
+            <span class="job-status">On The Way</span>
+            <span style="font-size: 0.875rem; color: var(--text-muted);">ETA: 15 mins</span>
+          </div>
+          <div class="job-details">
+            <div class="worker-avatar"></div>
+            <div class="job-info">
+              <h4>AC Maintenance</h4>
+              <p><i class="ph ph-user"></i> Mark Reyes</p>
+              <div class="warranty-tag"><i class="ph-fill ph-shield-check"></i> Covered</div>
+            </div>
+          </div>
+          <div class="job-actions">
+            <button class="btn btn-outline contactBtn" id="contactBtn"><i class="ph ph-phone"></i>Contact</button>
+            <button class="btn btn-primary" id="liveTrackBtn"><i class="ph ph-map-pin"></i> Live Track</button>
+          </div>
+        </div>
+
+        <div class="section-title" style="margin-top: 24px;">Past Jobs</div>
+
+        <div class="job-card" style="opacity: 0.8;">
+          <div class="job-header">
+            <span class="job-status" style="background: #e2e8f0; color: #64748b;">Completed</span>
+            <span style="font-size: 0.875rem; color: var(--text-muted);">Oct 12</span>
+          </div>
+          <div class="job-details">
+            <div class="worker-avatar"
+              style="background-image: url('https://ui-avatars.com/api/?name=Sarah+Lee&background=random');"></div>
+            <div class="job-info">
+              <h4>Sink Leak Repair</h4>
+              <p><i class="ph ph-user"></i> Sarah Lee</p>
+              <div class="warranty-tag"><i class="ph-fill ph-shield-check"></i> Valid till Nov 12</div>
+            </div>
+          </div>
+          <div class="job-actions">
+            <button class="btn btn-outline" id="rateServiceBtn">Rate Service</button>
+            <button class="btn btn-outline" id="claimWarrantyBtn">Claim Warranty</button>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- 4. PAYMENT VIEW (Wallet) -->
+      <section id="view-payment" class="view">
+        <div class="wallet-card">
+          <div class="wallet-label">KaagaPay Balance</div>
+          <div class="wallet-balance">₱3,450.00</div>
+          <div class="wallet-actions">
+            <button class="wallet-btn"><i class="ph ph-plus-circle"></i> Top Up</button>
+            <button class="wallet-btn"><i class="ph ph-arrows-left-right"></i> Transfer</button>
+          </div>
+        </div>
+
+        <div class="section-title">Recent Transactions</div>
+        <div class="transaction-list">
+          <div class="transaction-item">
+            <div class="tx-left">
+              <div class="tx-icon"><i class="ph ph-wrench"></i></div>
+              <div class="tx-info">
+                <h5>AC Repair Service</h5>
+                <p>Oct 18, 2026</p>
+              </div>
+            </div>
+            <div class="tx-amount negative">-₱800.00</div>
+          </div>
+          <div class="transaction-item">
+            <div class="tx-left">
+              <div class="tx-icon" style="background: #d1fae5; color: #10b981;"><i class="ph ph-money"></i></div>
+              <div class="tx-info">
+                <h5>Wallet Top Up</h5>
+                <p>Oct 15, 2026</p>
+              </div>
+            </div>
+            <div class="tx-amount positive">+₱2,000.00</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. ACCOUNT VIEW -->
+      <section id="view-account" class="view">
+        <div class="profile-header">
+          <div class="profile-avatar">RM</div>
+          <h2>Riel Montopa</h2>
+          <p>Member since 2025 • Makati City</p>
+        </div>
+
+        <div class="section-title">Your Eco Badges</div>
+        <div class="badges-grid">
+          <div class="badge-item">
+            <div class="badge-icon"><i class="ph-fill ph-plant"></i></div>
+            <span>Earth Saver</span>
+            <small>10 Repairs</small>
+          </div>
+          <div class="badge-item">
+            <div class="badge-icon" style="background: #e0e7ff; color: #4338ca;"><i class="ph-fill ph-drop"></i></div>
+            <span>Water Guard</span>
+            <small>5 Plumblings</small>
+          </div>
+          <div class="badge-item">
+            <div class="badge-icon" style="background: #f1f5f9; color: #64748b;"><i class="ph-fill ph-star"></i></div>
+            <span>Loyal User</span>
+            <small>1 Year</small>
+          </div>
+        </div>
+
+        <div class="transaction-list">
+          <div class="transaction-item">
+            <div class="tx-left">
+              <i class="ph ph-user-circle" style="font-size: 24px;"></i>
+              <div class="tx-info">
+                <h5>Personal Details</h5>
+              </div>
+            </div>
+            <i class="ph ph-caret-right text-muted"></i>
+          </div>
+          <div class="transaction-item">
+            <div class="tx-left">
+              <i class="ph ph-map-pin" style="font-size: 24px;"></i>
+              <div class="tx-info">
+                <h5>Saved Addresses</h5>
+              </div>
+            </div>
+            <i class="ph ph-caret-right text-muted"></i>
+          </div>
+          <div class="transaction-item">
+            <div class="tx-left">
+              <i class="ph ph-gear" style="font-size: 24px;"></i>
+              <div class="tx-info">
+                <h5>Settings</h5>
+              </div>
+            </div>
+            <i class="ph ph-caret-right text-muted"></i>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+      <div class="nav-item active" data-target="home">
+        <i class="ph-fill ph-house"></i>
+        <span>Home</span>
+      </div>
+      <div class="nav-item" data-target="activity">
+        <i class="ph ph-list-dashes"></i>
+        <span>Activity</span>
+      </div>
+      <div class="nav-item" data-target="find">
+        <i class="ph ph-magnifying-glass"></i>
+        <span>Find</span>
+      </div>
+      <div class="nav-item" data-target="payment">
+        <i class="ph ph-wallet"></i>
+        <span>Payment</span>
+      </div>
+      <div class="nav-item" data-target="account">
+        <i class="ph ph-user"></i>
+        <span>Account</span>
+      </div>
+    </nav>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="app.js"></script>
+</body>
+
+</html>
